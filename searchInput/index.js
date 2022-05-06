@@ -1,2 +1,2 @@
 "use strict";
-module.exports = require("./FloatSearchInput.vue")
+module.exports = require("./SearchInput.vue")

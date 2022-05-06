@@ -1,11 +1,11 @@
 <template>
-  <div class="float-search-input" v-click-outside="hide">
-    <div class="float-search-input__icon">
-     <slot name="icon" class="icon" ref="icon-slot"></slot>
+  <div class="search-input" v-click-outside="hide">
+    <div class="search-input__icon" v-if="icon">
+      <slot name="icon" class="icon" ref="icon-slot"></slot>
     </div>
-    <div class="float-search-input__main-content">
+    <div class="search-input__main-content">
       <input
-        class="float-search-input__input"
+        class="search-input__input"
         min="0"
         @blur="removeLabelStyles($event.target)"
         @focus="handleLabelStyles($event.target)"
@@ -41,9 +41,14 @@
           </template>
         </div>
       </div>
-      <div class="float-search-input__spinner" v-if="loading">
-        <div class="float-search-input__spinner-icon"></div>
+      <div class="search-input__spinner" v-if="loading">
+        <div class="search-input__spinner-icon"></div>
       </div>
+    </div>
+    <div class="search-input__dropdown-button-container" v-if="dropdown">
+      <button class="search-input__dropdown-button" @click="toggleDropdown">
+        V
+      </button>
     </div>
   </div>
 </template>
@@ -75,6 +80,10 @@ export default {
       default: false,
     },
     floatLabel: {
+      type: Boolean,
+      default: false,
+    },
+    dropdown: {
       type: Boolean,
       default: false,
     },
@@ -122,7 +131,6 @@ export default {
   },
   watch: {
     suggestions: {
-      immediate: true,
       deep: true,
       handler() {
         this.sections = [...this.suggestions];
@@ -130,9 +138,9 @@ export default {
         this.loading = false;
       },
     },
-    inputValue(value){
+    inputValue(value) {
       if (value) {
-        this.handleLabelStyles()
+        this.handleLabelStyles();
       }
     },
     $attrs: {
@@ -154,7 +162,7 @@ export default {
     },
   },
   created() {
-    this.sections = [];
+    this.sections = [...this.suggestions];
   },
   mounted() {
     this.labelContainer = this.$refs["label-container"];
@@ -170,14 +178,11 @@ export default {
       this.loading = false;
       clearTimeout(this.timeout);
       if (event.target.value.length >= this.lengthRequest) {
-        this.timeout = setTimeout(() => this.emitInputValue(event), this.delay);
-      } else {
-        this.loading = false;
-        this.sections = [];
+        this.loading = true;
       }
+      this.timeout = setTimeout(() => this.emitInputValue(event), this.delay);
     },
     emitInputValue(event) {
-      this.loading = true;
       this.$emit("search", { originalEvent: event, query: event.target.value });
       this.$emit("input", null);
     },
@@ -190,51 +195,45 @@ export default {
     hide() {
       this.dropdownCollapsed = true;
     },
+    toggleDropdown() {
+      this.dropdownCollapsed = !this.dropdownCollapsed;
+    },
     handleLabelStyles() {
-      if (this.suggestions.length) {
-        this.dropdownCollapsed = false;
-      }
+      this.dropdownCollapsed = true;
       if (this.floatLabel) {
-        this.labelContainer.classList.add("floatlabel")
-        if (this.icon) {
-          this.labelContainer.style.left = "-5%";   
-                 
-        }
+        this.labelContainer.classList.add("floatlabel");
       }
     },
     async removeLabelStyles(target) {
-      await this.sleep(100)
+      await this.sleep(100);
       if (this.forceSelection) {
-          if (!this.selectedOption) {
-            this.inputValue = "";
-            this.sections = [];
-            this.$emit("input", null);
-            target.value = ""
-          }
+        if (!this.selectedOption) {
+          this.inputValue = "";
+          this.sections = [];
+          this.$emit("input", null);
+          target.value = "";
+        }
       }
       if (this.floatLabel) {
         if (target.value === "") {
-          this.labelContainer.classList.remove("floatlabel")
-          if (this.icon) {
-            this.labelContainer.style.left = "0";          
-          }
+          this.labelContainer.classList.remove("floatlabel");
         }
       }
       this.$emit("blur");
-      this.dropdownCollapsed = true;
     },
-    sleep (milliseconds) {
-      return new Promise(resolve => setTimeout(resolve, milliseconds))
-    }
+    sleep(milliseconds) {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.float-search-input {
+.search-input {
   display: flex;
   position: relative;
   width: 100%;
+  height: 40px;
   padding: 5px;
   border-radius: 10px;
   box-shadow: none;
@@ -242,20 +241,23 @@ export default {
   background-color: white;
 }
 
-.float-search-input__main-content {
+.search-input__main-content {
   position: relative;
   display: flex;
   flex-basis: 100%;
+  height: 100%;
 }
 
-.float-search-input__icon {
+.search-input__icon {
   margin-right: 2px;
 }
 
 .label {
   position: absolute;
+  padding-left: 2px;
   width: 85%;
-  top: 4%;
+  height: 100%;
+  top: 9%;
   left: 0;
   pointer-events: none;
   transition: all 0.2s;
@@ -264,7 +266,7 @@ export default {
   text-align: left;
 }
 
-.floatlabel{
+.floatlabel {
   top: -1.5rem;
   left: 0%;
   font-size: 0.75rem;
@@ -275,7 +277,7 @@ export default {
   text-overflow: ellipsis;
 }
 
-.float-search-input__input {
+.search-input__input {
   width: 100%;
   height: 100%;
   border: none;
@@ -284,18 +286,18 @@ export default {
   background-color: white;
 }
 
-.float-search-input__input:focus {
+.search-input__input:focus {
   outline: 0;
 }
 
-.float-search-input__spinner {
+.search-input__spinner {
   color: #737373;
   position: absolute;
   top: 11%;
   right: 2%;
 }
 
-.float-search-input__spinner-icon {
+.search-input__spinner-icon {
   height: 16px;
   width: 16px;
   color: #5a5a5a;
@@ -305,6 +307,20 @@ export default {
   border-radius: 50%;
   border-top-color: transparent;
   animation: rotate 1s linear infinite;
+}
+
+.search-input__dropdown-button-container {
+  display: flex;
+  justify-content: center;
+  border-left: 1px solid #ced4da;
+  width: 32px;
+}
+.search-input__dropdown-button {
+  background: none;
+  border: none;
+  transform: scale(2, 1);
+  font-size: 12px;
+  color: #8b8b8b;
 }
 
 .dropdown {
@@ -320,15 +336,15 @@ export default {
 }
 
 .dropdown::-webkit-scrollbar {
-    width: 5px;
+  width: 5px;
 }
 .dropdown::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
 }
 .dropdown::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 .dropdown__section-name {
