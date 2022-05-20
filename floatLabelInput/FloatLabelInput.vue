@@ -12,9 +12,9 @@
         :disabled="disabled"
       />
       <div class="floatlabel-input__label" ref="label-container">
-        <label class="floatlabel-input____text-label" htmlFor="">{{
+        <p class="floatlabel-input__text-label" htmlFor="">{{
           label
-        }}</label>
+        }}</p>
       </div>
     </div>
   </div>
@@ -98,7 +98,7 @@ export default {
   position: absolute;
   align-items: center;
   padding-left: 2px;
-  width: 100%;
+  width: 85%;
   height: 100%;
   top: 9%;
   left: 0;
@@ -112,6 +112,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0px;
 }
 
 .floatlabel {

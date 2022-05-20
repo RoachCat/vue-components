@@ -1,6 +1,6 @@
 {
   "name": "roachcat-components-library",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Form components like inputs, autocomplete, dropdown, searchers, etc.",
   "main": "index.js",
   "scripts": {

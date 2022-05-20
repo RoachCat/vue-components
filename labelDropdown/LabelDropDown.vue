@@ -8,11 +8,11 @@
   >
     <div class="dropdown-container__selected-option">
       <div ref="label-container" class="label-container">
-        <label class="label-container__text">{{ label }}</label>
+        <p class="label-container__text">{{ label }}</p>
       </div>
-      <label ref="dropdown-container__text" class="dropdown-container__text">
+      <p ref="dropdown-container__text" class="dropdown-container__text">
         {{ selectedOptionLabel }}
-      </label>
+      </p>
       <div class="dropdown-container__icon-container">
         <button
           v-if="deleteButton && selectedOption"
@@ -153,7 +153,7 @@ export default {
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
-  width: 78%;
+  width: 80%;
   pointer-events: none;
   transition: all 0.2s;
   font-size: 1rem;
@@ -164,6 +164,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0px;
 }
 .dropdown-container__selected-option {
   position: relative;
@@ -171,7 +172,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-height: 38px;
+  max-height: 40px;
   padding: 0.5rem;
   background-color: white;
   border: none;
