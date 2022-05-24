@@ -121,7 +121,7 @@ export default {
         this.selectedOptionLabel = option.label;
         this.selectedOption = option.label;
         this.$emit("change", option);
-        this.$emit("input", option);
+        this.$emit("input", option.label);
       }
       this.dropdownCollapsed = true;
     },
