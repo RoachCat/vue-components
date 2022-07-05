@@ -5,7 +5,6 @@
     </div>
     <div class="table-container">
       <table
-        v-if="type === 'horizontal'"
         class="table"
         ref="table-component"
         border="1"
@@ -65,10 +64,6 @@
 export default {
   name: "HorizontalTable",
   props: {
-    type: {
-      type: String,
-      default: "horizontal",
-    },
     fields: {
       type: Array,
       default: () => [],
