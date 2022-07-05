@@ -1,12 +1,11 @@
 <template>
   <div class="table-component">
     <div class="button-toolbar" v-if="addRows">
-      <button class="button-toolbar__button" @click="addRow">
-        Add row
-      </button>
+      <button class="button-toolbar__button" @click="addRow">Add row</button>
     </div>
     <div class="table-container">
       <table
+        v-if="type === 'horizontal'"
         class="table"
         ref="table-component"
         border="1"
@@ -39,7 +38,7 @@
             <template v-for="(cell, index) in Object.keys(row)">
               <td
                 :style="tableStyles ? tableStyles.td : ''"
-                v-if="cell !== 'tableRowId'"
+                v-if="cell !== 'tableRowId' && cell !== 'inputType'"
                 :key="'cell-' + index"
                 :name="cell"
               >
@@ -66,6 +65,10 @@
 export default {
   name: "HorizontalTable",
   props: {
+    type: {
+      type: String,
+      default: "horizontal",
+    },
     fields: {
       type: Array,
       default: () => [],

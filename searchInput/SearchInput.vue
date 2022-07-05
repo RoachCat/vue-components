@@ -17,7 +17,7 @@
         :placeholder="!floatLabel ? label : ''"
       />
       <div v-if="floatLabel" class="label" ref="label-container">
-        <label class="label__text" htmlFor="">{{ label }}</label>
+        <p class="label__text" htmlFor="">{{ label }}</p>
       </div>
       <div v-if="!dropdownCollapsed && sections.length" class="dropdown">
         <slot name="main-action"></slot>
@@ -270,6 +270,9 @@ export default {
   top: -1.5rem;
   left: 0%;
   font-size: 0.75rem;
+  & p {
+    overflow: initial;
+  }
 }
 .label__text {
   white-space: nowrap;
