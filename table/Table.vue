@@ -5,6 +5,7 @@
     </div>
     <div class="table-container">
       <table
+        v-if="type === 'horizontal'"
         class="table"
         ref="table-component"
         border="1"
@@ -24,7 +25,7 @@
               :style="tableStyles ? tableStyles.th : ''"
               :key="'th-' + index"
             >
-              {{ field }}
+              {{ field.label }}
             </th>
             <th
               :style="tableStyles ? tableStyles.th : ''"
@@ -34,15 +35,14 @@
         </thead>
         <tbody>
           <tr v-for="(row, index) in tableData" :key="'row-' + row.tableRowId">
-            <template v-for="(cell, index) in Object.keys(row)">
+            <template v-for="(cell, index) in tableFields">
               <td
                 :style="tableStyles ? tableStyles.td : ''"
-                v-if="cell !== 'tableRowId' && cell !== 'inputType'"
                 :key="'cell-' + index"
-                :name="cell"
+                :name="cell.propName"
               >
-                <slot :name="cell" :row="row">
-                  <span>{{ row[cell] }}</span>
+                <slot :name="cell.propName" :row="row">
+                  <span>{{ row[cell.propName] }}</span>
                 </slot>
               </td>
             </template>
@@ -64,6 +64,10 @@
 export default {
   name: "HorizontalTable",
   props: {
+    type: {
+      type: String,
+      default: "horizontal",
+    },
     fields: {
       type: Array,
       default: () => [],
