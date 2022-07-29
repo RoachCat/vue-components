@@ -31,7 +31,7 @@
             <div
               v-for="(option, index) in section.options"
               :key="'option-' + index"
-              @click="selectOption(option)"
+              @mousedown="selectOption(option)"
             >
               <slot name="dropdown-option" :option="option">
                 <p class="dropdown__option">{{ option.label }}</p>
