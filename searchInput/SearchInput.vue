@@ -8,7 +8,7 @@
         class="search-input__input"
         min="0"
         @blur="removeLabelStyles($event.target)"
-        @focus="handleLabelStyles($event.target)"
+        @focus="handleLabelStyles($event.target), dropdownCollapsed = false"
         @input="handleText($event)"
         v-model="inputValue"
         :type="type"
@@ -19,7 +19,7 @@
       <div v-if="floatLabel" class="label" ref="label-container">
         <p class="label__text" htmlFor="">{{ label }}</p>
       </div>
-      <div v-if="!dropdownCollapsed && sections.length" class="dropdown">
+      <div v-if="!dropdownCollapsed && sections.length" class="dropdown" ref="options-container">
         <slot name="main-action"></slot>
         <div v-for="(section, index) in sections" :key="'section-' + index">
           <template v-if="section.options.length">
@@ -116,6 +116,10 @@ export default {
       type: Boolean,
       required: false,
     },
+    bottomReachEvent: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -132,11 +136,22 @@ export default {
   watch: {
     suggestions: {
       deep: true,
-      handler() {
+      async handler() {
         this.sections = [...this.suggestions];
         this.dropdownCollapsed = false;
         this.loading = false;
       },
+    },
+    dropdownCollapsed() {
+        if (this.bottomReachEvent) {
+          if (!this.dropdownCollapsed && this.sections.length) {
+            setTimeout(() => {
+          this.$refs["options-container"].addEventListener("scroll", this.handleScroll);
+          }, 0);
+        } else {
+          this.$refs["options-container"].removeEventListener("scroll", this.handleScroll);
+        }
+      }
     },
     inputValue(value) {
       if (value) {
@@ -202,6 +217,12 @@ export default {
       this.dropdownCollapsed = true;
       if (this.floatLabel) {
         this.labelContainer.classList.add("floatlabel");
+      }
+    },
+    handleScroll(event) {
+      const { scrollTop, clientHeight, scrollHeight } = event.target;
+      if (Math.ceil((scrollTop + clientHeight)) >= scrollHeight) {
+        this.$emit("bottomReached");
       }
     },
     async removeLabelStyles(target) {
