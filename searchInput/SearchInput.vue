@@ -8,7 +8,7 @@
         class="search-input__input"
         min="0"
         @blur="removeLabelStyles($event.target)"
-        @focus="handleLabelStyles($event.target), dropdownCollapsed = false"
+        @focus="handleLabelStyles($event.target), (dropdownCollapsed = false)"
         @input="handleText($event)"
         v-model="inputValue"
         :type="type"
@@ -19,7 +19,11 @@
       <div v-if="floatLabel" class="label" ref="label-container">
         <p class="label__text" htmlFor="">{{ label }}</p>
       </div>
-      <div v-if="!dropdownCollapsed && sections.length" class="dropdown" ref="options-container">
+      <div
+        v-if="!dropdownCollapsed && sections.length"
+        class="dropdown"
+        ref="options-container"
+      >
         <slot name="main-action"></slot>
         <div v-for="(section, index) in sections" :key="'section-' + index">
           <template v-if="section.options.length">
@@ -38,6 +42,7 @@
               </slot>
             </div>
             <hr v-if="index < sections.length - 1" class="dropdown__divider" />
+            <slot name="loading-container"> </slot>
           </template>
         </div>
       </div>
@@ -143,13 +148,19 @@ export default {
       },
     },
     dropdownCollapsed() {
-        if (this.bottomReachEvent) {
-          if (!this.dropdownCollapsed && this.sections.length) {
-            setTimeout(() => {
-          this.$refs["options-container"].addEventListener("scroll", this.handleScroll);
+      if (this.bottomReachEvent) {
+        if (!this.dropdownCollapsed && this.sections.length) {
+          setTimeout(() => {
+            this.$refs["options-container"].addEventListener(
+              "scroll",
+              this.handleScroll
+            );
           }, 0);
         } else {
-          this.$refs["options-container"].removeEventListener("scroll", this.handleScroll);
+          this.$refs["options-container"].removeEventListener(
+            "scroll",
+            this.handleScroll
+          );
         }
       }
     },
@@ -221,7 +232,7 @@ export default {
     },
     handleScroll(event) {
       const { scrollTop, clientHeight, scrollHeight } = event.target;
-      if (Math.ceil((scrollTop + clientHeight)) >= scrollHeight) {
+      if (Math.ceil(scrollTop + clientHeight) >= scrollHeight) {
         this.$emit("bottomReached");
       }
     },
