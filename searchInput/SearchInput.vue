@@ -198,15 +198,19 @@ export default {
   },
   methods: {
     handleText(event) {
-      if (this.selectedOption) {
-        this.selectedOption = null;
+      // The below validation is because, in mobile, words (not numbers) triggers the input event twice.
+      if (event.target.value !== this.inputValue) {
+        this.inputValue = event.target.value;
+        if (this.selectedOption) {
+          this.selectedOption = null;
+        }
+        this.loading = false;
+        clearTimeout(this.timeout);
+        if (event.target.value.length >= this.lengthRequest) {
+          this.loading = true;
+        }
+        this.timeout = setTimeout(() => this.emitInputValue(event), this.delay);
       }
-      this.loading = false;
-      clearTimeout(this.timeout);
-      if (event.target.value.length >= this.lengthRequest) {
-        this.loading = true;
-      }
-      this.timeout = setTimeout(() => this.emitInputValue(event), this.delay);
     },
     emitInputValue(event) {
       this.$emit("search", { originalEvent: event, query: event.target.value });
