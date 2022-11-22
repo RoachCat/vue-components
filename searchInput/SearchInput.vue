@@ -131,6 +131,7 @@ export default {
       labelContainer: null,
       mainContent: null,
       inputValue: "",
+      inputValueFlag: "",
       selectedOption: null,
       sections: [],
       timeout: null,
@@ -199,7 +200,7 @@ export default {
   methods: {
     handleText(event) {
       // The below validation is because, in mobile, words (not numbers) triggers the input event twice.
-      if (event.target.value !== this.inputValue) {
+      if (event.target.value !== this.inputValueFlag) {
         this.inputValue = event.target.value;
         if (this.selectedOption) {
           this.selectedOption = null;
@@ -210,6 +211,7 @@ export default {
           this.loading = true;
         }
         this.timeout = setTimeout(() => this.emitInputValue(event), this.delay);
+        this.inputValueFlag = event.target.value;
       }
     },
     emitInputValue(event) {

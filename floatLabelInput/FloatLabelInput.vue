@@ -65,6 +65,7 @@ export default {
   methods: {
     handleLabelStyles() {
       this.labelContainer.classList.add("floatlabel");
+      this.$emit("focus");
     },
     removeLabelStyles(target) {
       if (target.value === "") {
