@@ -10,6 +10,7 @@
         v-model="inputValue"
         :title="title"
         :disabled="disabled"
+        :pattern="pattern"
       />
       <div class="floatlabel-input__label" ref="label-container">
         <p class="floatlabel-input__text-label" htmlFor="">{{
@@ -34,6 +35,10 @@ export default {
       type: Boolean,
       required: false,
     },
+    pattern: {
+      type: String,
+      required: false,
+    }
   },
   data() {
     return {
@@ -44,6 +49,9 @@ export default {
     inputValue(value) {
       this.$emit("input", value);
     },
+    $attrs(){
+      this.inputValue = this.$attrs.value;
+    }
   },
   computed: {
     title() {
