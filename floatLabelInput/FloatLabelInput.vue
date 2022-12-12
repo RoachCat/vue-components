@@ -1,12 +1,13 @@
 <template>
-  <div class="floatlabel-input">
+  <div class="floatlabel-input" v-click-outside="hide">
     <div class="floatlabel-input__content">
       <input
         class="floatlabel-input__input"
         :type="type"
         min="0"
         @blur="removeLabelStyles($event.target)"
-        @focus="handleLabelStyles($event.target)"
+        @focus="handleLabelStyles($event.target), showSuggestions = true"
+        @input="filterSuggestions($event.target.value)"
         v-model="inputValue"
         :title="title"
         :disabled="disabled"
@@ -17,6 +18,13 @@
           label
         }}</p>
       </div>
+    </div>
+    <div class="suggestions" v-if="suggestions.length && showSuggestions">
+      <ul class="suggestions-list">
+        <li class="suggestions-list__item" @click="selectSuggestion(suggestion)" v-for="(suggestion, index) in filteredSuggestions" :key="index">
+          {{ suggestion }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -38,11 +46,33 @@ export default {
     pattern: {
       type: String,
       required: false,
-    }
+    },
+    suggestions: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+  },
+    directives: {
+    "click-outside": {
+      bind: (el, binding, vnode) => {
+        el.clickOutsideEvent = (event) => {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener("click", el.clickOutsideEvent);
+      },
+      unbind: (el) => {
+        document.body.removeEventListener("click", el.clickOutsideEvent);
+      },
+    },
   },
   data() {
     return {
       inputValue: "",
+      showSuggestions: false,
+      filteredSuggestions: []
     };
   },
   watch: {
@@ -63,6 +93,7 @@ export default {
   },
   created() {
     this.inputValue = this.$attrs.value;
+    this.filteredSuggestions = [...this.suggestions];
   },
   mounted() {
     this.labelContainer = this.$refs["label-container"];
@@ -76,10 +107,21 @@ export default {
       this.$emit("focus");
     },
     removeLabelStyles(target) {
-      if (target.value === "") {
+      if (target.value === "" && !this.inputValue) {
         this.labelContainer.classList.remove("floatlabel");
       }
       this.$emit("blur");
+    },
+    selectSuggestion(suggestion){
+      this.labelContainer.classList.add("floatlabel");
+      this.inputValue = suggestion;
+      this.showSuggestions = false;
+    },
+    filterSuggestions(value) {
+      this.filteredSuggestions = this.suggestions.filter(suggestion => suggestion.toLowerCase().includes(value.toLowerCase()));
+    },
+    hide() {
+      this.showSuggestions = false;
     },
   },
 };
@@ -87,6 +129,7 @@ export default {
 
 <style lang="scss" scoped>
 .floatlabel-input {
+  position: relative;
   display: flex;
   padding: 5px;
   width: 100%;
@@ -140,6 +183,50 @@ export default {
 }
 .floatlabel-input__input:focus {
   outline: 0;
+}
+
+.suggestions {
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  overflow-y: scroll;
+  background-color: white;
+  z-index: 10;
+}
+
+.suggestions-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  text-align: left;
+  border: 1px solid rgba(196, 196, 196, 0.767);
+}
+
+.suggestions-list__item {
+  padding: 5px 10px;
+  cursor: pointer;
+  &:hover {
+    background-color: #e9ecef;
+  }
+}
+
+.suggestions-list__item:hover {
+  background-color: #e9ecef;
+}
+
+.suggestions::-webkit-scrollbar {
+  width: 5px;
+}
+.suggestions::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.suggestions::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 input:disabled {
