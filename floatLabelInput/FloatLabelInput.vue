@@ -110,12 +110,15 @@ export default {
       if (target.value === "" && !this.inputValue) {
         this.labelContainer.classList.remove("floatlabel");
       }
-      this.$emit("blur");
+      this.$emit("blur");        
     },
     selectSuggestion(suggestion){
       this.labelContainer.classList.add("floatlabel");
       this.inputValue = suggestion;
       this.showSuggestions = false;
+      setTimeout(() => {
+        this.$emit("blur");        
+      }, 0);
     },
     filterSuggestions(value) {
       this.filteredSuggestions = this.suggestions.filter(suggestion => suggestion.toLowerCase().includes(value.toLowerCase()));
